@@ -15,3 +15,7 @@ UniNotif는 대학교 내에 분산되어 있는 홈페이지와 공지사항을
 아래의 단계를 따라 프로젝트를 설치하고 실행할 수 있습니다.
 
 wip
+
+### 필요 라이브러리
+    selenium
+    multipledispatch 
