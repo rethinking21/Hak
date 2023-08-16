@@ -18,3 +18,11 @@ class ABCGoogleCredentials(metaclass=ABCMeta):
     @abstractmethod
     def set_creds(self, cred: credentials.Credentials):
         pass
+
+    @abstractmethod
+    def destroy(self):
+        pass
+
+    @abstractmethod
+    def valid_cred(self) -> bool:
+        pass

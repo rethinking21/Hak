@@ -22,3 +22,4 @@ wip
     google-api-python-client
     gcsa
     cryptography
+    wendriver-manager
