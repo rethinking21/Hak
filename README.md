@@ -22,4 +22,7 @@ wip
     google-api-python-client
     gcsa
     cryptography
-    wendriver-manager
+    undetected-chromedriver (there is issue)
+
+### issue
+😓 there is a [undetected-chromedriver issue](./UC issue.md)
