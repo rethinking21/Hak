@@ -4,7 +4,7 @@
 ## 사이트 정보
 ex: https://portal.hanyang.ac.kr/openPop.do?header=hidden&url=/haksa/SughAct/findSuupPlanDocHyIn.do&flag=DN&year=2023&term=20&suup=10001&language=ko
 
-    2023 (10001 ~ 15485) (10001~13430, 15001~)
+    2023 (10001 ~ 15485) (10001~13430, 15001~15485)
     수강 정보를 담은 팝업
     year=2023 년도로 추정됨 (년도 별로 꽤 많이 저장 되어 있음)
     term=20 (10 1학기 20 2학기)
@@ -86,13 +86,15 @@ ex: https://portal.hanyang.ac.kr/openPop.do?header=hidden&url=/haksa/SughAct/fin
 
 ### 주별 강의 계획 및 과제 (weekArea) Weekly course schedule and assignments (data: weekly_course)
     해당 id > tbody 내에 들어있음
-    hyuilNm : 휴일이 들어있는 주차일 때 정보를 써놓음
+    jucha : 주차 Week no. (data: number)
 
-    jucha : 주차 Week no.
-    subject(name) : 주제 Subject
-    hyuilNotice : 휴일이 들어있는 주차일 때 써놓는 문구
-    hwaldong(name, id) : 활동 사항 (readonly이지만 보이는 듯) Experience career
-    suupViewtype : 수업 형태 (보통 설정 안해놓는 것 같음, value 값으로 확인 가능) Course Measure
+    (data: holiday - 휴일인지 아닌지 확인)
+    hyuilNm : 휴일이 들어있는 주차일 때 정보를 써놓음 (data: holiday_name)
+    hyuilNotice : 휴일이 들어있는 주차일 때 써놓는 문구 (data: holiday_notice)
+    
+    subject(name) : 주제 Subject (data: subject)
+    hwaldong(name, id) : 활동 사항 (readonly이지만 보이는 듯) Experience career (data: career)
+    suupViewtype : 수업 형태 (보통 설정 안해놓는 것 같음, value 값으로 확인 가능) Course Measure (data: view_type)
         
 
 존재하지만 잘 안쓰는 것 같아 기재해놓지 않은 내용은 추후 필요시 업데이트 예정
