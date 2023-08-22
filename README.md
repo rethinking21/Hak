@@ -22,7 +22,13 @@ wip
     google-api-python-client
     gcsa
     cryptography
+    pytesseract
     undetected-chromedriver (there is issue)
+    pytesseract
+    opencv-python
+
+### 필요 프로그램
+    Tesseract
 
 ### issue
 😓 there is a [undetected-chromedriver issue](./UC issue.md)
