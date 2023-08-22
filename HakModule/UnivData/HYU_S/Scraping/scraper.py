@@ -1,13 +1,15 @@
-from UniNotifModule.UnivData.HYU_S.Scraping.scrap_data import *
+from HakModule.UnivData.HYU_S.Scraping.scrap_data import *
 from selenium.common.exceptions import WebDriverException
 import json
 import os
 import time
-
+'''
+Scraper Sample
+'''
 # 2023: (10001~13430, 15001~15485)
 if __name__ == "__main__":
 
-    FILE_PATH: str = os.path.join('.', "UniNotifFile", "UnivData", "HYU_S")  # need to change
+    FILE_PATH: str = os.path.join('.', "HakFile", "UnivData", "HYU_S")  # need to change
     file_name: str = "test"
     ranges = [
 

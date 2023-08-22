@@ -1,5 +1,5 @@
 from google.oauth2 import credentials
-from UniNotifModule.Google.Credentials import ABCcreds
+from HakModule.Google.Credentials import ABCcreds
 import pickle
 import os
 
