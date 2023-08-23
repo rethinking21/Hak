@@ -27,6 +27,13 @@ wip
     pytesseract
     opencv-python
 
+### 필요 패키지(ubuntu)
+```commandline
+sudo pip install xlrd
+sudo apt-get install xvfb
+sudo pip install pyvirtualdisplay
+```
+
 ### 필요 프로그램
     Tesseract
 
@@ -34,4 +41,6 @@ wip
 😓 there is a [undetected-chromedriver issue](./UC issue.md)
 
 ---
-This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License.
+To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/ 
+or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.

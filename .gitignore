@@ -1,4 +1,4 @@
 /.idea
 /venv
 test.py
-test_scrap.py
+test_get_image.py
