@@ -14,14 +14,33 @@ from HakModule.Google.Selenium.SimpleElementFinder import *
 
 class EverytimeScheduleData(SimpleElementFinder):
     def __init__(self, table_body_data: WebElement = None):
+        """
+        Initialize an instance of EverytimeScheduleData.
+
+        Parameters
+        ----------
+        table_body_data : WebElement, optional
+            The web element containing table body data.
+        """
         super(EverytimeScheduleData, self).__init__(table_body_data)
         self.classroom_datas = []
 
     def convert_data(self):
+        """
+        Convert raw web data into structured classroom data.
+        """
         for classroom_element in self.find_elements_safe(by=By.CLASS_NAME, value="subject"):
             self.add_classroom_data(classroom_element)
 
     def add_classroom_data(self, element: WebElement = None):
+        """
+        Add classroom data to the list of classroom datas.
+
+        Parameters
+        ----------
+        element : WebElement, optional
+            The web element containing classroom data.
+        """
         classroom_data = OrderedDict([])
         if self.find_element_safe(target=element, by=By.CLASS_NAME, value="name") is not None:
             classroom_data['timed']: bool = False
@@ -42,6 +61,20 @@ class EverytimeToText(SimpleDriver):
             service: Optional[Service] = None,
             keep_alive: bool = True,
             wait_time: int = 1):
+        """
+        Initialize an instance of EverytimeToText.
+
+        Parameters
+        ----------
+        options : Options, optional
+            Custom options for configuring the WebDriver.
+        service : Service, optional
+            Custom service for the WebDriver.
+        keep_alive : bool, optional
+            Boolean flag indicating whether to keep the WebDriver alive.
+        wait_time : int, optional
+            Time to wait between actions, in seconds.
+        """
         super(EverytimeToText, self).__init__(
             options=options,
             service=service,
@@ -50,12 +83,41 @@ class EverytimeToText(SimpleDriver):
         )
 
     def setting_new_headless(self):
+        """
+        Add the "--headless=new" argument to the WebDriver options.
+        """
         self.options.add_argument("--headless=new")
 
     def code_to_classroom_data(self, code: str = '') -> Optional[EverytimeScheduleData]:
+        """
+        Convert a code to classroom data.
+
+        Parameters
+        ----------
+        code : str, optional
+            The code to convert.
+
+        Returns
+        -------
+        EverytimeScheduleData or None
+            An instance of EverytimeScheduleData containing classroom data.
+        """
         return self.url_to_classroom_data(f"https://everytime.kr/@{code}")
 
     def url_to_classroom_data(self, url: str = '') -> Optional[EverytimeScheduleData]:
+        """
+        Convert a URL to classroom data.
+
+        Parameters
+        ----------
+        url : str, optional
+            The URL to convert.
+
+        Returns
+        -------
+        EverytimeScheduleData or None
+            An instance of EverytimeScheduleData containing classroom data.
+        """
         self.driver.get(url)
         try:
             WebDriverWait(self.driver, 2).until(
@@ -73,6 +135,19 @@ class EverytimeToText(SimpleDriver):
             return schedule_data
 
     def get_classroom_element(self, element: WebElement = None) -> Optional[WebElement]:
+        """
+        Retrieve the classroom element from the web page.
+
+        Parameters
+        ----------
+        element : WebElement, optional
+            The web element to search from.
+
+        Returns
+        -------
+        WebElement or None
+            The classroom element or None if not found.
+        """
         element = self.driver.find_element(By.XPATH, '/html/body')
         if element is None:
             return None
