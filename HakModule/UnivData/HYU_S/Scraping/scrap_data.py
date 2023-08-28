@@ -14,6 +14,9 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
+from HakModule.Google.Selenium.SimpleDriver import SimpleDriver
+from HakModule.Google.Selenium.SimpleElementFinder import SimpleElementFinder
+
 
 class HYUSeoulClassUrl:
     """
@@ -87,7 +90,7 @@ class HYUSeoulClassUrl:
         return f"hyu_class_{self.year}_{term}_{self.langauge}"
 
 
-class HYUSeoulClassData:
+class HYUSeoulClassData(SimpleElementFinder):
     """
     This class represents data extracted from Hanyang University's Seoul campus class information page.
 
@@ -142,7 +145,7 @@ class HYUSeoulClassData:
         full_data : WebElement, optional
             Full web element containing class data.
         """
-        self.full_web_element: WebElement = full_data
+        super(HYUSeoulClassData, self).__init__(full_data=full_data)
         self.datas: OrderedDict = OrderedDict([])
 
     def clear_web_element(self) -> None:
@@ -210,108 +213,6 @@ class HYUSeoulClassData:
             True if class data is valid, False otherwise.
         """
         return self.find_element_safe(By.ID, "messageBox") is None
-
-    def find_element_safe(self, by: By = By.ID, value=None, target: WebElement = None) -> Optional[WebElement]:
-        """
-        Find a single web element safely.
-
-        Parameters
-        ----------
-        by : str or By, optional
-            Search method (default is By.ID).
-        value : str, optional
-            Search value.
-        target : WebElement, optional
-            Web element to search within.
-
-        Returns
-        -------
-        WebElement or None
-            Found web element or None.
-        """
-        try:
-            if target is None:
-                result = self.full_web_element.find_element(by, value)
-            else:
-                result = target.find_element(by, value)
-        except NoSuchElementException:
-            return None
-        else:
-            return result
-
-    def find_elements_safe(self, by: By = By.ID, value=None, target: WebElement = None) -> list[WebElement]:
-        """
-        Find a list of web elements safely.
-
-        Parameters
-        ----------
-        by : str or By, optional
-            Search method (default is By.ID).
-        value : str, optional
-            Search value.
-        target : WebElement, optional
-            Web element to search within.
-
-        Returns
-        -------
-        list[WebElement]
-            List of found web elements.
-        """
-        try:
-            if target is None:
-                result = self.full_web_element.find_elements(by, value)
-            else:
-                result = target.find_elements(by, value)
-        except NoSuchElementException:
-            return []
-        else:
-            return result
-
-    def find_text_data(self, by: By = By.ID, value=None, target: WebElement = None, return_type: type = str):
-        """
-        Find and return text data from a web element.
-
-        Parameters
-        ----------
-        by : str or By, optional
-            Search method (default is By.ID).
-        value : str, optional
-            Search value.
-        target : WebElement, optional
-            Web element to search within.
-        return_type : type, optional
-            Data type to return (default is str).
-        """
-        result = self.find_element_safe(by, value, target).text
-        if result == "":
-            return None
-        else:
-            return return_type(result)
-
-    def find_readonly_text_data(self, by: By = By.ID, value=None, target: WebElement = None, return_type: type = str):
-        """
-        Find and return readonly text data from a web element.
-
-        Parameters
-        ----------
-        by : str or By, optional
-            Search method (default is By.ID).
-        value : str, optional
-            Search value.
-        target : WebElement, optional
-            Web element to search within.
-        return_type : type, optional
-            Data type to return (default is str).
-        """
-        result_element = self.find_element_safe(by, value, target)
-        if result_element is None:
-            return None
-
-        result = self.find_element_safe(by, value, target).get_attribute('value')
-        if result == "" or result is None:
-            return None
-        else:
-            return return_type(result)
 
     def convert_course_info_data(self) -> OrderedDict:
         """
@@ -548,7 +449,7 @@ class HYUSeoulClassData:
         return course
 
 
-class HYUSeoulClassScraper:
+class HYUSeoulClassScraper(SimpleDriver):
     """
     Class for scraping class data from Hanyang University's Seoul campus class information page.
 
@@ -604,52 +505,13 @@ class HYUSeoulClassScraper:
         wait_time : int, optional
             Wait time in seconds.
         """
+        super(HYUSeoulClassScraper, self).__init__(
+            options=options,
+            service=service,
+            keep_alive=keep_alive,
+            wait_time=wait_time
+        )
         self.hyu_url: HYUSeoulClassUrl = hyu_url
-        self.driver: Optional[WebDriver] = None
-
-        self.options: Optional[Options] = options
-        self.service: Optional[Service] = service
-        self.keep_alive: bool = keep_alive
-
-        self.wait_time: int = wait_time
-
-    def run(self):
-        """
-        Start the WebDriver instance.
-        """
-        if self.driver is not None:
-            pass
-        self.driver = webdriver.Chrome(options=self.options, service=self.service, keep_alive=self.keep_alive)
-
-    def quit(self):
-        """
-        Quit the WebDriver instance.
-        """
-        if self.driver is None:
-            return
-        else:
-            self.driver.quit()
-            self.driver = None
-
-    def refresh_driver(self, debug: bool = False):
-        """
-        Refresh the WebDriver instance.
-
-        Parameters
-        ----------
-        debug : bool, optional
-            Flag to print debug information.
-        """
-        if debug:
-            print("refresh driver..")
-        self.quit()
-        self.run()
-
-    def set_headless(self):
-        """
-        Set the WebDriver instance to run in headless mode.
-        """
-        self.options.add_argument("headless")
 
     def get_data(self, class_no: int,
                  show_debug: bool = False,
