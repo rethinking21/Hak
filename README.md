@@ -26,6 +26,7 @@ wip
     undetected-chromedriver (there is issue)
     pytesseract
     opencv-python
+    canvasapi
 
 ### 필요 패키지(ubuntu)
 ```commandline

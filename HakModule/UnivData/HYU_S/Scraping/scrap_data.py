@@ -16,31 +16,139 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 
 class HYUSeoulClassUrl:
+    """
+    This class provides methods to generate URLs and file names for Hanyang University's Seoul campus class information page.
+
+    Attributes
+    ----------
+    MAIN_URL : str
+        The main URL of the class information page.
+
+    Parameters
+    ----------
+    year : int, optional
+        Academic year (default is 2023).
+    class_no : int, optional
+        Class number (default is 10001).
+    term : int, optional
+        Term number (default is 0).
+    langauge : str, optional
+        Language for the URL (default is 'ko').
+    """
     MAIN_URL: str = r"https://portal.hanyang.ac.kr/openPop.do?header=hidden&url=/haksa/SughAct/findSuupPlanDocHyIn.do"
 
     def __init__(self, year: int = 2023, class_no: int = 10001, term: int = 0, langauge: str = 'ko'):
+        """
+        Initialize the HYUSeoulClassUrl instance with parameters.
+
+        Parameters
+        ----------
+        year : int, optional
+            Academic year (default is 2023).
+        class_no : int, optional
+            Class number (default is 10001).
+        term : int, optional
+            Term number (default is 0).
+        langauge : str, optional
+            Language for the URL (default is 'ko').
+        """
         self.year: int = year
         self.class_no: int = class_no
         self.term: int = 10 + 5 * term  # thinking
         self.langauge: str = langauge  # ko or en
 
     def set_current_year(self) -> None:
+        """
+        Set the current year based on the system date.
+        """
         self.year = datetime.datetime.today().year
 
     def get_url(self) -> str:
+        """
+        Generate and return the URL for the HYUSeoulClass page.
+
+        Returns
+        -------
+        str
+            The generated URL as a string.
+        """
         return f"{HYUSeoulClassUrl.MAIN_URL}&flag=DN&year={self.year}&term={self.term}&suup={self.class_no}&language={self.langauge}"
 
     def get_file_name(self) -> str:
+        """
+        Generate and return a file name based on instance parameters.
+
+        Returns
+        -------
+        str
+            The generated file name as a string.
+        """
         term = ['none', 'none', 'first', 'summer', 'second', 'winter'][self.term//5]
         return f"hyu_class_{self.year}_{term}_{self.langauge}"
 
 
 class HYUSeoulClassData:
+    """
+    This class represents data extracted from Hanyang University's Seoul campus class information page.
+
+    Attributes
+    ----------
+    full_web_element : WebElement, optional
+        The full web element containing class data.
+    datas : OrderedDict
+        Ordered dictionary to store class data.
+
+    Methods
+    -------
+    clear_web_element()
+        Clear the web element.
+    convert_data(check_course_info=True, check_instructor=True, ...)
+        Convert class data based on given flags.
+    check_valid_class_data()
+        Check if the class data is valid.
+    find_element_safe(by=By.ID, value=None, target=None)
+        Find a single web element safely.
+    find_elements_safe(by=By.ID, value=None, target=None)
+        Find a list of web elements safely.
+    find_text_data(by=By.ID, value=None, target=None, return_type=str)
+        Find and return text data from a web element.
+    find_readonly_text_data(by=By.ID, value=None, target=None, return_type=str)
+        Find and return readonly text data from a web element.
+    convert_course_info_data()
+        Convert course information data to an ordered dictionary.
+    convert_course_info_schedule()
+        Convert course information schedule data to a list.
+    convert_instructor_data()
+        Convert instructor data to an ordered dictionary.
+    convert_outline()
+        Convert outline data to an ordered dictionary.
+    convert_books()
+        Convert books data to an ordered dictionary.
+    convert_element_to_book(target=None)
+        Convert an element to book data and return an ordered dictionary.
+    convert_evaluation()
+        Convert evaluation data to an ordered dictionary.
+    convert_weekly_course()
+        Convert weekly course data to a list.
+    convert_element_to_course(target=None)
+        Convert an element to course data and return an ordered dictionary.
+    """
     def __init__(self, full_data: WebElement = None):
+        """
+        Initialize the HYUSeoulClassData instance.
+
+        Parameters
+        ----------
+        full_data : WebElement, optional
+            Full web element containing class data.
+        """
         self.full_web_element: WebElement = full_data
         self.datas: OrderedDict = OrderedDict([])
 
     def clear_web_element(self) -> None:
+        """
+        Clear the web element.
+        """
         self.full_web_element = None
 
     def convert_data(self,
@@ -51,6 +159,24 @@ class HYUSeoulClassData:
                      check_eval: bool = True,
                      check_weekly_course: bool = True,
                      ) -> None:
+        """
+        Convert class data based on given flags.
+
+        Parameters
+        ----------
+        check_course_info : bool, optional
+            Flag to check course information data.
+        check_instructor : bool, optional
+            Flag to check instructor data.
+        check_outline : bool, optional
+            Flag to check outline data.
+        check_books : bool, optional
+            Flag to check books data.
+        check_eval : bool, optional
+            Flag to check evaluation data.
+        check_weekly_course : bool, optional
+            Flag to check weekly course data.
+        """
         if self.check_valid_class_data():
             self.datas['valid']: bool = True
         else:
@@ -75,9 +201,34 @@ class HYUSeoulClassData:
                 self.datas['weekly_course'] = self.convert_weekly_course()
 
     def check_valid_class_data(self) -> bool:
+        """
+        Check if the class data is valid.
+
+        Returns
+        -------
+        bool
+            True if class data is valid, False otherwise.
+        """
         return self.find_element_safe(By.ID, "messageBox") is None
 
     def find_element_safe(self, by: By = By.ID, value=None, target: WebElement = None) -> Optional[WebElement]:
+        """
+        Find a single web element safely.
+
+        Parameters
+        ----------
+        by : str or By, optional
+            Search method (default is By.ID).
+        value : str, optional
+            Search value.
+        target : WebElement, optional
+            Web element to search within.
+
+        Returns
+        -------
+        WebElement or None
+            Found web element or None.
+        """
         try:
             if target is None:
                 result = self.full_web_element.find_element(by, value)
@@ -89,6 +240,23 @@ class HYUSeoulClassData:
             return result
 
     def find_elements_safe(self, by: By = By.ID, value=None, target: WebElement = None) -> list[WebElement]:
+        """
+        Find a list of web elements safely.
+
+        Parameters
+        ----------
+        by : str or By, optional
+            Search method (default is By.ID).
+        value : str, optional
+            Search value.
+        target : WebElement, optional
+            Web element to search within.
+
+        Returns
+        -------
+        list[WebElement]
+            List of found web elements.
+        """
         try:
             if target is None:
                 result = self.full_web_element.find_elements(by, value)
@@ -100,6 +268,20 @@ class HYUSeoulClassData:
             return result
 
     def find_text_data(self, by: By = By.ID, value=None, target: WebElement = None, return_type: type = str):
+        """
+        Find and return text data from a web element.
+
+        Parameters
+        ----------
+        by : str or By, optional
+            Search method (default is By.ID).
+        value : str, optional
+            Search value.
+        target : WebElement, optional
+            Web element to search within.
+        return_type : type, optional
+            Data type to return (default is str).
+        """
         result = self.find_element_safe(by, value, target).text
         if result == "":
             return None
@@ -107,6 +289,20 @@ class HYUSeoulClassData:
             return return_type(result)
 
     def find_readonly_text_data(self, by: By = By.ID, value=None, target: WebElement = None, return_type: type = str):
+        """
+        Find and return readonly text data from a web element.
+
+        Parameters
+        ----------
+        by : str or By, optional
+            Search method (default is By.ID).
+        value : str, optional
+            Search value.
+        target : WebElement, optional
+            Web element to search within.
+        return_type : type, optional
+            Data type to return (default is str).
+        """
         result_element = self.find_element_safe(by, value, target)
         if result_element is None:
             return None
@@ -118,6 +314,14 @@ class HYUSeoulClassData:
             return return_type(result)
 
     def convert_course_info_data(self) -> OrderedDict:
+        """
+        Convert course information data to an ordered dictionary.
+
+        Returns
+        -------
+        OrderedDict
+            Ordered dictionary containing course information data.
+        """
         course_info = OrderedDict([])
         course_info['year']: int = self.find_text_data(By.ID, "suupYear", return_type=int)
 
@@ -155,6 +359,14 @@ class HYUSeoulClassData:
         return course_info
 
     def convert_course_info_schedule(self) -> list:
+        """
+        Convert course information schedule data to a list.
+
+        Returns
+        -------
+        list
+            List of course information schedule data.
+        """
         course_info_schedule_text: str = self.find_text_data(By.ID, "suupTimeStr")
         if course_info_schedule_text is None:
             return []
@@ -165,6 +377,14 @@ class HYUSeoulClassData:
         return course_info_schedule
 
     def convert_instructor_data(self) -> OrderedDict:
+        """
+        Convert instructor data to an ordered dictionary.
+
+        Returns
+        -------
+        OrderedDict
+            Ordered dictionary containing instructor data.
+        """
         instructor = OrderedDict([])
         instructor['department']: str = self.find_text_data(By.ID, "deptNm")
         instructor['name']: str = self.find_text_data(By.ID, "pName")
@@ -174,6 +394,14 @@ class HYUSeoulClassData:
         return instructor
 
     def convert_outline(self) -> OrderedDict:
+        """
+        Convert outline data to an ordered dictionary.
+
+        Returns
+        -------
+        OrderedDict
+            Ordered dictionary containing outline data.
+        """
         outline = OrderedDict([])
         outline['outline']: str = self.find_readonly_text_data(By.ID, "gwamokYoyak")
         outline['guide']: str = self.find_readonly_text_data(By.ID, "gwamokMokpyo")
@@ -190,6 +418,14 @@ class HYUSeoulClassData:
         return outline
 
     def convert_books(self) -> OrderedDict:
+        """
+        Convert books data to an ordered dictionary.
+
+        Returns
+        -------
+        OrderedDict
+            Ordered dictionary containing books data.
+        """
         books = OrderedDict([])
         textbooks: list[OrderedDict] = []
         textbooks_element = self.find_element_safe(By.ID, 'gdText')
@@ -213,6 +449,19 @@ class HYUSeoulClassData:
         return books
 
     def convert_element_to_book(self, target: WebElement = None) -> OrderedDict:
+        """
+        Convert an element to book data and return an ordered dictionary.
+
+        Parameters
+        ----------
+        target : WebElement, optional
+            Web element to convert.
+
+        Returns
+        -------
+        OrderedDict
+            Ordered dictionary containing book data.
+        """
         book = OrderedDict([])
         if target is None:
             return book
@@ -224,6 +473,14 @@ class HYUSeoulClassData:
         return book
 
     def convert_evaluation(self) -> OrderedDict:
+        """
+        Convert evaluation data to an ordered dictionary.
+
+        Returns
+        -------
+        OrderedDict
+            Ordered dictionary containing evaluation data.
+        """
         evaluation = OrderedDict([])
         evaluation['attendance']: int = self.find_readonly_text_data(By.NAME, "attendRatio", return_type=int)
         evaluation['quiz']: int = self.find_readonly_text_data(By.NAME, "quizRatio", return_type=int)
@@ -237,6 +494,14 @@ class HYUSeoulClassData:
         return evaluation
 
     def convert_weekly_course(self) -> list:
+        """
+        Convert weekly course data to a list.
+
+        Returns
+        -------
+        list
+            List of weekly course data.
+        """
         weekly_course = []
         weekly_course_element = self.find_element_safe(By.ID, 'gdWeek')
         for course_element in self.find_elements_safe(By.XPATH, './tbody/tr', target=weekly_course_element):
@@ -244,6 +509,19 @@ class HYUSeoulClassData:
         return weekly_course
 
     def convert_element_to_course(self, target: WebElement = None) -> OrderedDict:
+        """
+        Convert an element to course data and return an ordered dictionary.
+
+        Parameters
+        ----------
+        target : WebElement, optional
+            Web element to convert.
+
+        Returns
+        -------
+        OrderedDict
+            Ordered dictionary containing course data.
+        """
         course = OrderedDict([])
         if target is None or self.find_element_safe(By.CLASS_NAME, 'emptyDataList', target=target) is not None:
             return course
@@ -271,11 +549,61 @@ class HYUSeoulClassData:
 
 
 class HYUSeoulClassScraper:
+    """
+    Class for scraping class data from Hanyang University's Seoul campus class information page.
+
+    Attributes
+    ----------
+    hyu_url : HYUSeoulClassUrl
+        Instance of HYUSeoulClassUrl containing the base URL.
+    driver : WebDriver, optional
+        WebDriver instance for handling browser interaction.
+
+    options : Options, optional
+        WebDriver options for browser configuration.
+    service : Service, optional
+        WebDriver service.
+    keep_alive : bool
+        Flag to keep the WebDriver instance alive.
+    wait_time : int
+        Wait time in seconds.
+
+    Methods
+    -------
+    run()
+        Start the WebDriver instance.
+    quit()
+        Quit the WebDriver instance.
+    refresh_driver(debug=False)
+        Refresh the WebDriver instance.
+    set_headless()
+        Set the WebDriver instance to run in headless mode.
+    get_data(class_no, show_debug=False, ...)
+        Get class data for a specific class number.
+    get_datas(ranges, check_course_info=True, ...)
+        Get class data for a list of class numbers or ranges.
+    """
     def __init__(self, hyu_url: HYUSeoulClassUrl,
                  options: Optional[Options] = None,
                  service: Optional[Service] = None,
                  keep_alive: bool = True,
                  wait_time: int = 1):
+        """
+        Initialize the HYUSeoulClassScraper instance.
+
+        Parameters
+        ----------
+        hyu_url : HYUSeoulClassUrl
+            Instance of HYUSeoulClassUrl containing the base URL.
+        options : Options, optional
+            WebDriver options for browser configuration.
+        service : Service, optional
+            WebDriver service.
+        keep_alive : bool, optional
+            Flag to keep the WebDriver instance alive.
+        wait_time : int, optional
+            Wait time in seconds.
+        """
         self.hyu_url: HYUSeoulClassUrl = hyu_url
         self.driver: Optional[WebDriver] = None
 
@@ -286,11 +614,17 @@ class HYUSeoulClassScraper:
         self.wait_time: int = wait_time
 
     def run(self):
+        """
+        Start the WebDriver instance.
+        """
         if self.driver is not None:
             pass
         self.driver = webdriver.Chrome(options=self.options, service=self.service, keep_alive=self.keep_alive)
 
     def quit(self):
+        """
+        Quit the WebDriver instance.
+        """
         if self.driver is None:
             return
         else:
@@ -298,12 +632,23 @@ class HYUSeoulClassScraper:
             self.driver = None
 
     def refresh_driver(self, debug: bool = False):
+        """
+        Refresh the WebDriver instance.
+
+        Parameters
+        ----------
+        debug : bool, optional
+            Flag to print debug information.
+        """
         if debug:
             print("refresh driver..")
         self.quit()
         self.run()
 
     def set_headless(self):
+        """
+        Set the WebDriver instance to run in headless mode.
+        """
         self.options.add_argument("headless")
 
     def get_data(self, class_no: int,
@@ -314,6 +659,33 @@ class HYUSeoulClassScraper:
                  check_books: bool = True,
                  check_eval: bool = True,
                  check_weekly_course: bool = True, ) -> Optional[HYUSeoulClassData]:
+        """
+        Get class data for a specific class number.
+
+        Parameters
+        ----------
+        class_no : int
+            Class number.
+        show_debug : bool, optional
+            Flag to print debug information.
+        check_course_info : bool, optional
+            Flag to check course information data.
+        check_instructor : bool, optional
+            Flag to check instructor data.
+        check_outline : bool, optional
+            Flag to check outline data.
+        check_books : bool, optional
+            Flag to check books data.
+        check_eval : bool, optional
+            Flag to check evaluation data.
+        check_weekly_course : bool, optional
+            Flag to check weekly course data.
+
+        Returns
+        -------
+        Optional[HYUSeoulClassData]
+            Instance of HYUSeoulClassData or None.
+        """
         if show_debug:
             print(f"getting data.. : {class_no}")
         self.hyu_url.class_no = class_no
@@ -351,6 +723,35 @@ class HYUSeoulClassScraper:
                   debug: bool = False,
                   refresh_driver_rate: int = 50
                   ) -> list[Optional[HYUSeoulClassData]]:
+        """
+        Get class data for a list of class numbers or ranges.
+
+        Parameters
+        ----------
+        ranges : list[Union[int, tuple[int, int]]]
+            List of class numbers or ranges.
+        check_course_info : bool, optional
+            Flag to check course information data.
+        check_instructor : bool, optional
+            Flag to check instructor data.
+        check_outline : bool, optional
+            Flag to check outline data.
+        check_books : bool, optional
+            Flag to check books data.
+        check_eval : bool, optional
+            Flag to check evaluation data.
+        check_weekly_course : bool, optional
+            Flag to check weekly course data.
+        debug : bool, optional
+            Flag to print debug information.
+        refresh_driver_rate : int, optional
+            Refresh driver after every 'refresh_driver_rate' number of requests.
+
+        Returns
+        -------
+        list[Optional[HYUSeoulClassData]]
+            List of HYUSeoulClassData instances or None.
+        """
         refresh_driver_counter: int = 0
         result = []
         for data_range in ranges:
