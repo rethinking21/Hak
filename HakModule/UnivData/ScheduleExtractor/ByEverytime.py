@@ -50,8 +50,8 @@ class EverytimeScheduleData(SimpleElementFinder):
             classroom_data['name']: str = self.find_text_data(target=element, by=By.TAG_NAME, value="h3")
             classroom_data['instructor']: str = self.find_text_data(target=element, by=By.TAG_NAME, value="em")
             classroom_data['place']: str = self.find_text_data(target=element, by=By.TAG_NAME, value="span")
-        # TODO: Delete duplicate timetable data.
-        self.classroom_datas.append(classroom_data)
+        if classroom_data['name'] not in [data['name'] for data in self.classroom_datas]:
+            self.classroom_datas.append(classroom_data)
 
 
 class EverytimeToText(SimpleDriver):
